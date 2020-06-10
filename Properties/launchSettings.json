@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CoreCodeCamp": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "remoteDebugMachine": "api/values",
+      "authenticationMode": "None"
+    }
+  }
+}
