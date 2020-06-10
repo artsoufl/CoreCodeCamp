@@ -10,10 +10,13 @@ namespace CoreCodeCamp.Data
     {
         public CampProfile()
         {
-            this.CreateMap<Camp, CampModel>().MaxDepth(3).PreserveReferences();
+            this.CreateMap<Camp, CampModel>(); //.MaxDepth(3).PreserveReferences();
             //.ForMember(c => c.Venue, o => o.MapFrom(m => m.Location.VenueName));
-
             this.CreateMap<Talk, TalkModel>();
+
+            this.CreateMap<CampModel, Camp>()
+                .ForPath(c => c.Location.VenueName, o => o.MapFrom(m =>m.LocationVenueName));
+            this.CreateMap<TalkModel, Talk>();
         }
     }
 }
