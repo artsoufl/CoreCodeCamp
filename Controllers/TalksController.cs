@@ -62,6 +62,7 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
+        // http://localhost:5000/api/camps/ATL2018/talks and in the body I need to have a TalkModel
         [HttpPost]
         public async Task<ActionResult<TalkModel>> Post(string moniker, TalkModel model)
         {
@@ -96,6 +97,7 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
+        // http://localhost:5000/api/camps/ATL2018/talks/3 and in the body I need to have a TalkModel with the changes
         [HttpPut("{id:int}")]
         public async Task<ActionResult<TalkModel>> Put(string moniker, int id, TalkModel model)
         {
@@ -130,6 +132,7 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
+        // http://localhost:5000/api/camps/ATL2018/talks/3 with the delete tag in Postman
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(string moniker, int id)
         {
