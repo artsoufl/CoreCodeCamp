@@ -7,41 +7,44 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CoreCodeCamp.Controllers
 {
-    // [Route("api/v{version:apiVersion}/[controller]")] if UrlSegmentApiVersionReader is used in startup
-    [Route("api/[controller]")]
-    [ApiVersion("1.0")]
-    [ApiVersion("1.1")]
+    [Route("api/camps")]
+    [ApiVersion("2.0")]
     [ApiController] // attempts body binding
-    public class CampsController : ControllerBase
+    public class Camps2Controller : ControllerBase
     {
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
         private readonly LinkGenerator _linkGenerator;
 
-        public CampsController(ICampRepository repository, IMapper mapper, LinkGenerator linkGenerator)
+        public Camps2Controller(ICampRepository repository, IMapper mapper, LinkGenerator linkGenerator)
         {
             _repository = repository;
             _mapper = mapper;
             _linkGenerator = linkGenerator;
         }
 
-        // http://localhost:5000/api/camps?includeTalks=true
+        // http://localhost:5000/api/camps?api-version=2.0
         // if I return Task<IActionResult> then return Ok(models);
         // but if I return Task<ActionResult<CampModel[]>> then return models; becase this will return action result for us, no need for Ok()
         [HttpGet]
-        public async Task<ActionResult<CampModel[]>> GetCamps(bool includeTalks = false)
+        public async Task<IActionResult> Get(bool includeTalks = false)
         {
             try
             {
                 var results = await _repository.GetAllCampsAsync(includeTalks);
-
-                CampModel[] models = _mapper.Map<CampModel[]>(results);
-                return models;
+                var result = new
+                {
+                    Count = results.Count(),
+                    Results = _mapper.Map<CampModel[]>(results)
+                };
+                
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -54,36 +57,12 @@ namespace CoreCodeCamp.Controllers
 
         // the attribute passed is the one in the uri after the controller name
         [HttpGet("{moniker}")]
-        [MapToApiVersion("1.0")]
         public async Task<ActionResult<CampModel>> Get(string moniker)
         {
             try
             {
                 var result = await _repository.GetCampAsync(moniker);
                 
-                if (result == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return _mapper.Map<CampModel>(result);
-                }
-            }
-            catch
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database failure");
-            }
-        }
-
-        [HttpGet("{moniker}")]
-        [MapToApiVersion("1.1")]
-        public async Task<ActionResult<CampModel>> Get11(string moniker)
-        {
-            try
-            {
-                var result = await _repository.GetCampAsync(moniker, true);
-
                 if (result == null)
                 {
                     return NotFound();
